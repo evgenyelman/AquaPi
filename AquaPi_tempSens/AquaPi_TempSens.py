@@ -5,6 +5,9 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
+import datetime as dt
+
+
 
 
 os.system('modprobe w1-gpio')
@@ -40,16 +43,18 @@ def read_temp(isDebug):
 # Code starts here
 isDebug = True
 tempVec = np.empty(10)
+tempVec2 = []
+timeVec = []
 while True:
     tempVec = np.roll(tempVec,-1)
     tempVec[-1] = read_temp(isDebug)
+    
+    tempVec2.append(tempVec[-1])
+    timeVec.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
 
-    plt.clf() # Clears the previus plot
-    plt.plot(tempVec)
-    plt.ylabel('some numbers')
-    plt.show(block=False) # if block=True script will stop at this line until the figure closed
+    plt.clf() # Clears the plot
+    plt.plot(timeVec,tempVec2)
+    plt.ylabel('Temp. [C]')
+    plt.xticks(rotation=45, ha='right')
+    plt.show(block=True) # if block=True script will stop at this line until the figure close
     plt.pause(0.05)
-
-    print(tempVec)
-    time.sleep(1)
-
