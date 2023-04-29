@@ -2,6 +2,9 @@ import os
 import glob
 import time
 
+import numpy as np
+
+
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
@@ -24,8 +27,13 @@ def read_temp():
         temp_string = lines[1][equals_pos+2:]
         temp_c = float(temp_string) / 1000.0
         temp_f = temp_c * 9.0 / 5.0 + 32.0
-        return temp_c, temp_f
-    
+        return temp_c
+
+
+tempVec = np.empty(10)
 while True:
-    print(read_temp())
+    tempVec = np.roll(tempVec,-1)
+    tempVec[-1] = read_temp()
+    
+    print(tempVec)
     time.sleep(1)
