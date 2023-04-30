@@ -42,19 +42,46 @@ def read_temp(isDebug):
 
 # Code starts here
 isDebug = True
-tempVec = np.empty(10)
-tempVec2 = []
+
+# Plot Config
+maxSmaples = 24*60*60
+numPlotTimeStamps = 24
+figTempSizeX=10
+fifTempSizeY=6
+
+# Var init
+tempVec = []
 timeVec = []
 while True:
-    tempVec = np.roll(tempVec,-1)
-    tempVec[-1] = read_temp(isDebug)
     
-    tempVec2.append(tempVec[-1])
-    timeVec.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
+    currTemp = read_temp(isDebug)
+    curTime  = dt.datetime.now().strftime('%H:%M:%S.%f');
+    
+    tempVec.append(currTemp)
+    timeVec.append(curTime)
 
+    
+    lenTempVec = len(tempVec)
+ 
+    # Dump old samples if over float
+    if lenTempVec>maxSmaples:
+        tempVec = tempVec[lenTempVec-maxSmaples:]
+        timeVec = timeVec[lenTempVec-maxSmaples:]
+   
+    # Should be a checker that the above arrays are with the same length.
+    
+    lenTimeVec = len(timeVec)
+    dsFac = np.ceil(lenTimeVec/numPlotTimeStamps) # The downsample factor, int is required for sliceing
+    xTicks2show = range(0,lenTimeVec,int(dsFac))
+    
+    labels2show=[]
+    for oldIdx in  xTicks2show:
+        labels2show.append(timeVec[oldIdx][:-7])
+    
+    plt.figure(figsize=(figTempSizeX,fifTempSizeY))
     plt.clf() # Clears the plot
-    plt.plot(timeVec,tempVec2)
+    plt.plot(timeVec,tempVec)
     plt.ylabel('Temp. [C]')
-    plt.xticks(rotation=45, ha='right')
-    plt.show(block=True) # if block=True script will stop at this line until the figure close
+    plt.xticks(xTicks2show, labels2show, rotation=45, ha='right')
+    plt.show(block=False) # if block=True script will stop at this line until the figure close
     plt.pause(0.05)
