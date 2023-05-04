@@ -97,7 +97,7 @@ def loadSamplesFromLog(CurrTime):
 
 
 # Code starts here
-isDebug = False
+isDebug = True
 
 # Plot Config
 maxSmaples = 24*60*60
@@ -105,7 +105,7 @@ numPlotTimeStamps = 24
 xTicksFontSize = 8
 figTempSizeX=10
 fifTempSizeY=6
-logSaveInterval = 60 #Seconds
+logSaveInterval = 5 #Seconds
 
 # Var init
 unsavedTempSamples = []
@@ -135,14 +135,12 @@ while True:
         # save the unsaved samples and append them to the saved list samples
         saveSamplesToLog(CurrTime,unsavedTimeSamples,unsavedTempSamples)
         lastSaveTime    = dt.datetime.now()
-        savedTempSamples.append(unsavedTempSamples)
-        savedTimeSamples.append(unsavedTimeSamples)
         
         # As it is a new day, dump the past samples (wich are now 2 days old) and the replace them with saved samples (which are now one day old)
         pastTempSamples = []
         pastTimeSamples = []
-        pastTempSamples.append(savedTempSamples)
-        pastTimeSamples.append(savedTimeSamples)
+        pastTempSamples = pastTempSamples + savedTempSamples
+        pastTimeSamples = pastTimeSamples + savedTimeSamples
         
         # clear the saved samples as they are from the previus day.
         savedTempSamples = []
